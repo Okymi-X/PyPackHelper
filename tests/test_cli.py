@@ -2,10 +2,9 @@
 Tests for PyPackHelper CLI module.
 """
 
-import pytest
 from typer.testing import CliRunner
-from pyph.cli import app
 
+from pyph.cli import app
 
 runner = CliRunner()
 
@@ -68,16 +67,23 @@ def test_clean_command_help():
 
 def test_init_package_basic(temp_dir):
     """Test basic package initialization."""
-    result = runner.invoke(app, [
-        "init", "testpkg",
-        "--path", str(temp_dir),
-        "--author", "Test Author",
-        "--email", "test@example.com"
-    ])
-    
+    result = runner.invoke(
+        app,
+        [
+            "init",
+            "testpkg",
+            "--path",
+            str(temp_dir),
+            "--author",
+            "Test Author",
+            "--email",
+            "test@example.com",
+        ],
+    )
+
     # Should succeed
     assert result.exit_code == 0
-    
+
     # Check if package directory was created
     package_dir = temp_dir / "testpkg"
     assert package_dir.exists()
@@ -90,12 +96,9 @@ def test_init_package_already_exists(temp_dir):
     """Test initialization when package already exists."""
     # Create directory first
     (temp_dir / "testpkg").mkdir()
-    
-    result = runner.invoke(app, [
-        "init", "testpkg",
-        "--path", str(temp_dir)
-    ])
-    
+
+    result = runner.invoke(app, ["init", "testpkg", "--path", str(temp_dir)])
+
     # Should fail
     assert result.exit_code == 1
     assert "already exists" in result.stdout
@@ -103,21 +106,15 @@ def test_init_package_already_exists(temp_dir):
 
 def test_bump_invalid_version_type(sample_package_dir):
     """Test bump with invalid version type."""
-    result = runner.invoke(app, [
-        "bump", "invalid",
-        "--path", str(sample_package_dir)
-    ])
-    
+    result = runner.invoke(app, ["bump", "invalid", "--path", str(sample_package_dir)])
+
     assert result.exit_code == 1
     assert "must be 'major', 'minor', or 'patch'" in result.stdout
 
 
 def test_version_command(sample_package_dir):
     """Test version command."""
-    result = runner.invoke(app, [
-        "version",
-        "--path", str(sample_package_dir)
-    ])
-    
+    result = runner.invoke(app, ["version", "--path", str(sample_package_dir)])
+
     assert result.exit_code == 0
     assert "Current version:" in result.stdout

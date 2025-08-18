@@ -2,8 +2,7 @@
 Tests for the main pyph module.
 """
 
-import pytest
-from pyph import __version__, __author__, __email__, __description__
+from pyph import __author__, __description__, __email__, __version__
 
 
 def test_module_metadata():
@@ -17,13 +16,13 @@ def test_module_metadata():
 def test_module_imports():
     """Test that main components can be imported."""
     from pyph import (
-        app,
         PackageInitializer,
-        VersionManager,
+        PackageUploader,
         PackageValidator,
-        PackageUploader
+        VersionManager,
+        app,
     )
-    
+
     # Check that imports work
     assert app is not None
     assert PackageInitializer is not None
@@ -35,33 +34,36 @@ def test_module_imports():
 def test_package_initializer_import():
     """Test PackageInitializer can be instantiated."""
     from pyph import PackageInitializer
-    
+
     initializer = PackageInitializer(name="test")
     assert initializer.name == "test"
 
 
 def test_version_manager_import():
     """Test VersionManager can be instantiated."""
-    from pyph import VersionManager
     from pathlib import Path
-    
+
+    from pyph import VersionManager
+
     vm = VersionManager(Path("."))
     assert vm.package_path is not None
 
 
 def test_package_validator_import():
     """Test PackageValidator can be instantiated."""
-    from pyph import PackageValidator
     from pathlib import Path
-    
+
+    from pyph import PackageValidator
+
     validator = PackageValidator(Path("."))
     assert validator.package_path is not None
 
 
 def test_package_uploader_import():
     """Test PackageUploader can be instantiated."""
-    from pyph import PackageUploader
     from pathlib import Path
-    
+
+    from pyph import PackageUploader
+
     uploader = PackageUploader(Path("."))
     assert uploader.package_path is not None

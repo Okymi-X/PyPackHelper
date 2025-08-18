@@ -2,15 +2,14 @@
 Package initialization module for creating new Python packages.
 """
 
-import os
+import datetime
 from pathlib import Path
 from typing import Optional
-import datetime
 
 
 class PackageInitializer:
     """Handles creation of new Python packages with standard structure."""
-    
+
     def __init__(
         self,
         name: str,
@@ -18,7 +17,7 @@ class PackageInitializer:
         email: Optional[str] = None,
         description: Optional[str] = None,
         license_type: str = "MIT",
-        github_actions: bool = True
+        github_actions: bool = True,
     ):
         self.name = name
         self.author = author or "Your Name"
@@ -27,57 +26,57 @@ class PackageInitializer:
         self.license_type = license_type
         self.github_actions = github_actions
         self.current_year = datetime.datetime.now().year
-    
+
     def create_package(self, target_path: Path) -> Path:
         """Create a complete package structure."""
         package_path = target_path / self.name
-        
+
         if package_path.exists():
             raise ValueError(f"Directory '{self.name}' already exists")
-        
+
         # Create main package directory
         package_path.mkdir(parents=True)
-        
+
         # Create package structure
         self._create_package_structure(package_path)
-        
+
         # Create configuration files
         self._create_setup_py(package_path)
         self._create_pyproject_toml(package_path)
         self._create_requirements_files(package_path)
-        
+
         # Create documentation
         self._create_readme(package_path)
         self._create_license(package_path)
-        
+
         # Create source code structure
         self._create_source_structure(package_path)
-        
+
         # Create test structure
         self._create_test_structure(package_path)
-        
+
         # Create configuration files
         self._create_config_files(package_path)
-        
+
         # Create GitHub Actions if requested
         if self.github_actions:
             self._create_github_actions(package_path)
-        
+
         return package_path
-    
+
     def _create_package_structure(self, package_path: Path):
         """Create basic package directory structure."""
         directories = [
             self.name,
             "tests",
             "docs",
-            ".github/workflows" if self.github_actions else None
+            ".github/workflows" if self.github_actions else None,
         ]
-        
+
         for directory in directories:
             if directory:
                 (package_path / directory).mkdir(parents=True, exist_ok=True)
-    
+
     def _create_setup_py(self, package_path: Path):
         """Create setup.py file."""
         setup_content = f'''"""Setup script for {self.name}."""
@@ -138,10 +137,10 @@ setup(
 )
 '''
         (package_path / "setup.py").write_text(setup_content, encoding="utf-8")
-    
+
     def _create_pyproject_toml(self, package_path: Path):
         """Create pyproject.toml file."""
-        toml_content = f'''[build-system]
+        toml_content = f"""[build-system]
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
@@ -242,14 +241,16 @@ exclude = [
     ".venv",
     "venv",
 ]
-'''
+"""
         (package_path / "pyproject.toml").write_text(toml_content, encoding="utf-8")
-    
+
     def _create_requirements_files(self, package_path: Path):
         """Create requirements files."""
         # Main requirements
-        (package_path / "requirements.txt").write_text("# Add your package dependencies here\n", encoding="utf-8")
-        
+        (package_path / "requirements.txt").write_text(
+            "# Add your package dependencies here\n", encoding="utf-8"
+        )
+
         # Development requirements
         dev_requirements = """# Development dependencies
 pytest>=6.0
@@ -260,11 +261,13 @@ isort>=5.0
 mypy>=0.800
 pre-commit>=2.0
 """
-        (package_path / "requirements-dev.txt").write_text(dev_requirements, encoding="utf-8")
-    
+        (package_path / "requirements-dev.txt").write_text(
+            dev_requirements, encoding="utf-8"
+        )
+
     def _create_readme(self, package_path: Path):
         """Create README.md file."""
-        readme_content = f'''# {self.name}
+        readme_content = f"""# {self.name}
 
 {self.description}
 
@@ -328,13 +331,13 @@ This project is licensed under the {self.license_type} License - see the [LICENS
 ## Author
 
 {self.author} - {self.email}
-'''
+"""
         (package_path / "README.md").write_text(readme_content, encoding="utf-8")
-    
+
     def _create_license(self, package_path: Path):
         """Create LICENSE file."""
         if self.license_type == "MIT":
-            license_content = f'''MIT License
+            license_content = f"""MIT License
 
 Copyright (c) {self.current_year} {self.author}
 
@@ -355,16 +358,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
         else:
             license_content = f"# License\n\nThis project is licensed under the {self.license_type} License.\n"
-        
+
         (package_path / "LICENSE").write_text(license_content, encoding="utf-8")
-    
+
     def _create_source_structure(self, package_path: Path):
         """Create source code structure."""
         source_dir = package_path / self.name
-        
+
         # __init__.py
         init_content = f'''"""
 {self.name} - {self.description}
@@ -378,7 +381,7 @@ __email__ = "{self.email}"
 # from .core import MainClass
 '''
         (source_dir / "__init__.py").write_text(init_content, encoding="utf-8")
-        
+
         # main.py
         main_content = f'''"""
 Main module for {self.name}.
@@ -394,7 +397,7 @@ if __name__ == "__main__":
     main()
 '''
         (source_dir / "main.py").write_text(main_content, encoding="utf-8")
-        
+
         # cli.py (if needed)
         cli_content = f'''"""
 Command line interface for {self.name}.
@@ -422,14 +425,14 @@ if __name__ == "__main__":
     main()
 '''
         (source_dir / "cli.py").write_text(cli_content, encoding="utf-8")
-    
+
     def _create_test_structure(self, package_path: Path):
         """Create test structure."""
         tests_dir = package_path / "tests"
-        
+
         # __init__.py
         (tests_dir / "__init__.py").write_text("", encoding="utf-8")
-        
+
         # conftest.py
         conftest_content = '''"""
 Pytest configuration and fixtures.
@@ -444,7 +447,7 @@ def sample_data():
     return {"key": "value", "number": 42}
 '''
         (tests_dir / "conftest.py").write_text(conftest_content, encoding="utf-8")
-        
+
         # test_main.py
         test_main_content = f'''"""
 Tests for {self.name} main module.
@@ -468,11 +471,11 @@ def test_sample_with_fixture(sample_data):
 # Add more tests here
 '''
         (tests_dir / "test_main.py").write_text(test_main_content, encoding="utf-8")
-    
+
     def _create_config_files(self, package_path: Path):
         """Create configuration files."""
         # .gitignore
-        gitignore_content = '''# Byte-compiled / optimized / DLL files
+        gitignore_content = """# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -611,11 +614,11 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
-'''
+"""
         (package_path / ".gitignore").write_text(gitignore_content, encoding="utf-8")
-        
+
         # .env.example
-        env_example_content = '''# Environment variables for development
+        env_example_content = """# Environment variables for development
 # Copy this to .env and fill in your values
 
 # PyPI credentials (for upload)
@@ -625,11 +628,13 @@ PYPI_TOKEN=your_pypi_token_here
 # TestPyPI credentials (for testing)
 TESTPYPI_USERNAME=__token__
 TESTPYPI_TOKEN=your_testpypi_token_here
-'''
-        (package_path / ".env.example").write_text(env_example_content, encoding="utf-8")
-        
+"""
+        (package_path / ".env.example").write_text(
+            env_example_content, encoding="utf-8"
+        )
+
         # setup.cfg
-        setup_cfg_content = '''[metadata]
+        setup_cfg_content = """[metadata]
 license_files = LICENSE
 
 [bdist_wheel]
@@ -663,12 +668,12 @@ exclude_lines =
     def __repr__
     raise AssertionError
     raise NotImplementedError
-'''
+"""
         (package_path / "setup.cfg").write_text(setup_cfg_content, encoding="utf-8")
-    
+
     def _create_github_actions(self, package_path: Path):
         """Create GitHub Actions workflow."""
-        workflow_content = f'''name: Test and Deploy
+        workflow_content = f"""name: Test and Deploy
 
 on:
   push:
@@ -749,7 +754,7 @@ jobs:
       with:
         user: __token__
         password: ${{{{ secrets.PYPI_API_TOKEN }}}}
-'''
+"""
         github_dir = package_path / ".github" / "workflows"
         github_dir.mkdir(parents=True, exist_ok=True)
         (github_dir / "ci.yml").write_text(workflow_content, encoding="utf-8")
